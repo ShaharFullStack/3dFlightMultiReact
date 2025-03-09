@@ -42,22 +42,22 @@ export class GameService {
 
     private setupMouseControls(): void {
         const gameContainer = this.renderer?.domElement.parentElement;
-
+        
         if (!gameContainer) {
             console.error("Cannot set up mouse controls: game container not found");
             return;
         }
-
+        
         // Track mouse movement when pointer is locked
         document.addEventListener('mousemove', (e) => {
             if (document.pointerLockElement === gameContainer) {
                 this.mousePosition.x += e.movementX;
                 this.mousePosition.y += e.movementY;
-
+                
                 // Update target rotation based on mouse movement
                 this.targetCameraRotation.y -= e.movementX * this.mouseSensitivity * 0.01;
                 this.targetCameraRotation.x -= e.movementY * this.mouseSensitivity * 0.01;
-
+                
                 // Clamp vertical rotation to prevent camera flipping
                 this.targetCameraRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.targetCameraRotation.x));
             }
@@ -65,32 +65,32 @@ export class GameService {
         // Toggle pointer lock on container click
         gameContainer.addEventListener('click', () => {
             if (!this.mouseLookEnabled) return;
-
+            
             if (document.pointerLockElement !== gameContainer) {
                 gameContainer.requestPointerLock();
             }
         });
-
+        
         // Handle pointer lock change
         document.addEventListener('pointerlockchange', () => {
             this.mouseLookEnabled = document.pointerLockElement === gameContainer;
         });
-
+        
         // Add key handler for enabling/disabling mouse look
         window.addEventListener('keydown', (e) => {
             if (e.key === 'm' || e.key === 'M') {
                 this.toggleMouseLook();
             }
         });
-
+        
         console.log("Mouse controls initialized");
     }
 
     public toggleMouseLook(): void {
         this.mouseLookEnabled = !this.mouseLookEnabled;
-
+        
         const gameContainer = this.renderer?.domElement.parentElement;
-
+        
         if (this.mouseLookEnabled && gameContainer) {
             gameContainer.requestPointerLock();
             this.showMessage("Mouse look enabled - Click game to capture mouse");
@@ -104,19 +104,19 @@ export class GameService {
         const views = Object.keys(this.cameraOffsets) as CameraView[];
         const currentIndex = views.indexOf(this.gameSettings.currentCameraView);
         const nextIndex = (currentIndex + 1) % views.length;
-
+    
         this.gameSettings.currentCameraView = views[nextIndex];
-
+        
         // Reset camera rotation when switching modes
         this.targetCameraRotation.set(0, 0, 0);
         this.currentCameraRotation.set(0, 0, 0);
         this.mousePosition = { x: 0, y: 0 };
-
+    
         // Update HUD
         if (this.updateHUDCallback) {
             this.updateHUDCallback(this.gameSettings);
         }
-
+    
         // Show message
         this.showMessage(`Camera: ${this.gameSettings.currentCameraView}`);
     }
@@ -622,44 +622,7 @@ export class GameService {
         } catch (error) {
             console.error("Error in animation loop:", error);
         }
-
-        // Get base camera position from selected view mode
-        const cameraOffset = this.cameraOffsets[this.gameSettings.currentCameraView].clone();
-
-        // Smooth camera rotation transition
-        this.currentCameraRotation.x += (this.targetCameraRotation.x - this.currentCameraRotation.x) * this.rotationSmoothing;
-        this.currentCameraRotation.y += (this.targetCameraRotation.y - this.currentCameraRotation.y) * this.rotationSmoothing;
-
-        // Create rotation quaternion from Euler angles
-        const cameraRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(
-            this.currentCameraRotation.x,
-            this.currentCameraRotation.y,
-            0
-        ));
-
-        // Apply rotation to the offset vector for orbiting in TPS modes
-        if (this.gameSettings.currentCameraView !== CameraView.FPS) {
-            cameraOffset.applyQuaternion(cameraRotation);
-        }
-
-        // Set camera position relative to player
-        this.camera.position.copy(this.player.position).add(cameraOffset);
-
-        // Set camera orientation
-        if (this.gameSettings.currentCameraView === CameraView.FPS) {
-            // In FPS mode, rotate the camera directly (looking from cockpit)
-            this.camera.quaternion.copy(this.player.quaternion);
-            this.camera.rotateX(this.currentCameraRotation.x);
-            this.camera.rotateY(this.currentCameraRotation.y);
-        } else {
-            // In TPS modes, always look at the player
-            this.camera.lookAt(this.player.position);
-        }
-
-
     }
-
-    
     /**
      * Create game environment
      */
