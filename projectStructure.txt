@@ -1,0 +1,89 @@
+# Balloon Fighter React TypeScript Project Structure
+
+```
+Frontend/
+├── public/
+│   ├── index.html
+│   ├── favicon.ico
+│   ├── assets/
+│   │   ├── images/
+│   │   │   └── grass_top.jpg
+│   │   ├── music/
+│   │   │   └── (music files)
+│   │   └── favicon.ico
+├── src/
+│   ├── index.tsx
+│   ├── App.tsx
+│   ├── index.css
+│   ├── Assets/
+│   │   └── (static assets)
+│   ├── Components/
+│   │   ├── LayoutArea/
+│   │   │   ├── Header/
+│   │   │   │   ├── Header.tsx
+│   │   │   │   └── Header.css
+│   │   │   ├── Layout/
+│   │   │   │   ├── Layout.tsx
+│   │   │   │   └── Layout.css
+│   │   │   ├── Menu/
+│   │   │   │   ├── Menu.tsx
+│   │   │   │   └── Menu.css
+│   │   │   ├── Page404/
+│   │   │   │   ├── Page404.tsx
+│   │   │   │   └── Page404.css
+│   │   │   └── Routing/
+│   │   │       ├── Routing.tsx
+│   │   │       └── Routing.css
+│   │   └── PagesArea/
+│   │       ├── Home/
+│   │       │   ├── Home.tsx
+│   │       │   └── Home.css
+│   │       └── Game/
+│   │           ├── Game.tsx
+│   │           └── Game.css
+│   ├── Models/
+│   │   ├── UserModel.ts
+│   │   ├── CredentialsModel.ts
+│   │   ├── role-model.ts
+│   │   ├── GameModels.ts
+│   │   └── PlaneModel.ts
+│   ├── Services/
+│   │   ├── UserService.ts
+│   │   ├── NetworkService.ts
+│   │   ├── GameService.ts
+│   │   └── AudioService.ts
+│   └── Utils/
+│       ├── AppConfig.ts
+│       ├── ImageUtil.ts
+│       ├── Interceptor.ts
+│       ├── Notify.ts
+│       └── UseTitle.ts
+Backend/
+└── (Node.js server code remains unchanged)
+```
+
+## Key Components to Implement:
+
+1. **Game Component Structure:**
+   - MainGame - Container component
+   - GameUI - Heads-up display
+   - SceneSetup - Three.js scene initialization
+   - PlaneControls - Player aircraft controls
+   - Environment - Game world and objects
+   - Network - Multiplayer functionality
+   - Audio - Game sound management
+
+2. **Auth & User Management:**
+   - PlayerRegistration - User registration form
+   - Login - User login form
+
+3. **UI Components:**
+   - LoadingScreen - Game loading UI
+   - Scoreboard - Multiplayer scores
+   - Chat - In-game messaging
+   - Controls - Instructions panel
+
+4. **Services:**
+   - NetworkService - WebSocket communication
+   - GameService - Game state management
+   - AudioService - Sound management

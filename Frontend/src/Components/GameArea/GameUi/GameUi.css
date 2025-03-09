@@ -1,0 +1,302 @@
+/* src/Components/PagesArea/GameUI/GameUI.css */
+
+.game-ui {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* HUD elements */
+.hud {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+
+.altitude-indicator,
+.score-indicator,
+.difficulty-indicator,
+.connection-status {
+  background-color: rgba(20, 20, 35, 0.7);
+  padding: 10px 16px;
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+  border-left: 3px solid #2575fc;
+  color: white;
+  pointer-events: auto;
+}
+
+.connection-status.connected {
+  border-left-color: #00c853;
+}
+
+.connection-status.disconnected {
+  border-left-color: #ff3d00;
+}
+
+/* Health Bar */
+.health-bar-container {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 10px;
+  background-color: rgba(20, 20, 35, 0.7);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.health-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #2575fc, #6a11cb);
+  border-radius: 24px;
+  transition: width 0.4s ease;
+}
+
+.health-bar.warning {
+  background: linear-gradient(to right, #ffd166, #f0a500);
+}
+
+.health-bar.danger {
+  background: linear-gradient(to right, #ff4d4d, #c1121f);
+}
+
+/* Controls info */
+.controls-info {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background-color: rgba(20, 20, 35, 0.8);
+  padding: 16px;
+  border-radius: 12px;
+  max-width: 280px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+  line-height: 1.6;
+  color: white;
+  pointer-events: auto;
+  direction: rtl;
+  text-align: right;
+}
+
+.controls-info h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.controls-info p {
+  margin: 5px 0;
+  font-size: 13px;
+}
+
+/* Multiplayer scoreboard */
+.multiplayer-scoreboard {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: rgba(20, 20, 35, 0.8);
+  color: white;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 280px;
+  max-width: 320px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.multiplayer-scoreboard h3 {
+  text-align: center;
+  margin-bottom: 12px;
+  color: #fff;
+  font-size: 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.multiplayer-scoreboard table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.multiplayer-scoreboard th, 
+.multiplayer-scoreboard td {
+  padding: 8px 5px;
+  text-align: left;
+}
+
+.multiplayer-scoreboard th {
+  color: #aaa;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.multiplayer-scoreboard tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.multiplayer-scoreboard .local-player {
+  background-color: rgba(37, 117, 252, 0.1);
+  font-weight: 600;
+}
+
+/* Multiplayer badge */
+.multiplayer-badge {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(to right, #2575fc, #6a11cb);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(37, 117, 252, 0.3);
+  z-index: 100;
+  animation: fadeIn 0.5s ease;
+  pointer-events: auto;
+}
+
+/* Chat system */
+.chat-overlay {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  height: 240px;
+  background-color: rgba(20, 20, 35, 0.8);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  padding: 8px;
+  font-size: 14px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  color: white;
+}
+
+.chat-message {
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.08);
+  word-wrap: break-word;
+  line-height: 1.4;
+  animation: messageAppear 0.3s ease;
+}
+
+@keyframes messageAppear {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-input {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.chat-input:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #2575fc;
+}
+
+/* Game buttons */
+.game-buttons {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.multiplayer-toggle,
+.chat-toggle {
+  background: linear-gradient(to right, #2575fc, #6a11cb);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(37, 117, 252, 0.3);
+}
+
+.multiplayer-toggle:hover,
+.chat-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 117, 252, 0.4);
+}
+
+.multiplayer-toggle.active {
+  background: linear-gradient(to right, #ff4d4d, #f9844a);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .multiplayer-scoreboard {
+    max-width: 260px;
+    padding: 12px;
+  }
+  
+  .chat-overlay {
+    width: 280px;
+    height: 220px;
+    padding: 12px;
+  }
+  
+  .controls-info {
+    max-width: 240px;
+    padding: 12px;
+    font-size: 12px;
+  }
+  
+  .health-bar-container {
+    width: 220px;
+  }
+}

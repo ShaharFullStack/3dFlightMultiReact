@@ -1,0 +1,272 @@
+/* src/Components/PagesArea/Game/Game.css */
+
+.game-page {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  .game-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  
+  /* Game specific elements */
+  .damage-flash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(193, 18, 31, 0.2);
+    pointer-events: none;
+    z-index: 900;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .respawn-countdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 0 24px rgba(193, 18, 31, 0.8);
+    z-index: 900;
+    display: none;
+  }
+  
+  /* Message style */
+  .game-message {
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 30px;
+    font-size: 34px;
+    border-radius: 5px;
+    color: white;
+    z-index: 1000;
+    animation: fadeInOut 2s forwards;
+    direction: rtl;
+    text-align: right;
+  }
+  
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-20px); }
+    10% { opacity: 0.8; transform: translateY(0); }
+    80% { opacity: 0.8; }
+    100% { opacity: 0; }
+  }
+  
+  /* Mobile controls */
+  .mobile-controls {
+    position: fixed;
+    bottom: 80px;
+    left: 0;
+    right: 0;
+    display: none; /* Hidden by default, will be shown on mobile devices */
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 100;
+  }
+  
+  .mobile-joystick {
+    width: 120px;
+    height: 120px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    position: relative;
+  }
+  
+  .mobile-joystick-handle {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .mobile-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .mobile-button {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+  }
+  
+  /* Show mobile controls on small screens */
+  @media (max-width: 768px) {
+    .mobile-controls {
+      display: flex;
+    }
+    
+    /* Hide the regular controls info on mobile */
+    .controls-info {
+      display: none;
+    }
+  }
+  
+  /* Pause menu */
+  .pause-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .pause-menu-content {
+    background-color: rgba(30, 30, 45, 0.9);
+    border-radius: 16px;
+    padding: 30px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .pause-menu h2 {
+    font-size: 28px;
+    color: white;
+    margin-bottom: 20px;
+  }
+  
+  .pause-menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .pause-menu-button {
+    background: linear-gradient(to right, #2575fc, #6a11cb);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .pause-menu-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 117, 252, 0.4);
+  }
+  
+  .pause-menu-button.resume {
+    background: linear-gradient(to right, #00c853, #09af00);
+  }
+  
+  .pause-menu-button.quit {
+    background: linear-gradient(to right, #ff4d4d, #f9844a);
+  }
+  
+  /* Animation for elements that appear/disappear */
+  .fade-in {
+    animation: fadeIn 0.5s ease forwards;
+  }
+  
+  .fade-out {
+    animation: fadeOut 0.5s ease forwards;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  
+  /* Fullscreen mode */
+  .game-page.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+  }
+  
+  /* Game over screen */
+  .game-over {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    color: white;
+  }
+  
+  .game-over h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+  }
+  
+  .game-over .score {
+    font-size: 24px;
+    margin-bottom: 40px;
+  }
+  
+  .game-over .buttons {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .game-over button {
+    padding: 12px 24px;
+    font-size: 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .game-over button.restart {
+    background: linear-gradient(to right, #2575fc, #6a11cb);
+    color: white;
+  }
+  
+  .game-over button.main-menu {
+    background: linear-gradient(to right, #f9844a, #ff4d4d);
+    color: white;
+  }

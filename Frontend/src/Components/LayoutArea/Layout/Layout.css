@@ -1,0 +1,38 @@
+/* src/Components/LayoutArea/Layout/Layout.css */
+
+.layout {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "header header"
+      "menu main";
+  }
+  
+  .layout > header {
+    grid-area: header;
+  }
+  
+  .layout > aside {
+    grid-area: menu;
+  }
+  
+  .layout > main {
+    grid-area: main;
+    overflow: auto;
+  }
+  
+  /* For game view, expand to full screen */
+  .game-layout {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr;
+    grid-template-areas: "main";
+  }
+  
+  .game-layout > main {
+    grid-area: main;
+    overflow: hidden;
+  }
