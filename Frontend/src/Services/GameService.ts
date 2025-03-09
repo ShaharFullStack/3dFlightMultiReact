@@ -17,6 +17,12 @@ export class GameService {
         score: 0,
         difficultyLevel: 1
     };
+    private mousePosition: { x: number, y: number } = { x: 0, y: 0 };
+    private mouseLookEnabled: boolean = false;
+    private mouseSensitivity: number = 0.2;
+    private targetCameraRotation: THREE.Euler = new THREE.Euler();
+    private currentCameraRotation: THREE.Euler = new THREE.Euler();
+    private rotationSmoothing: number = 0.1;
 
     // THREE.js objects
     private scene: THREE.Scene | null = null;
@@ -29,10 +35,91 @@ export class GameService {
     private balloons: THREE.Mesh[] = [];
     private remotePlayers: Record<string, PlayerModel> = {};
     private cameraOffsets: Record<string, THREE.Vector3> = {
-        [CameraView.TPS]: new THREE.Vector3(0, 30, 45),
-        [CameraView.FPS]: new THREE.Vector3(0, 5, 10),
-        [CameraView.TPS_FAR]: new THREE.Vector3(0, 10, 200)
+        [CameraView.FPS]: new THREE.Vector3(0, 2, -1),    // Front cockpit view
+        [CameraView.TPS]: new THREE.Vector3(0, 10, 30),   // Third-person view
+        [CameraView.TPS_FAR]: new THREE.Vector3(0, 40, 80) // Far third-person view
     };
+
+    private setupMouseControls(): void {
+        const gameContainer = this.renderer?.domElement.parentElement;
+
+        if (!gameContainer) {
+            console.error("Cannot set up mouse controls: game container not found");
+            return;
+        }
+
+        // Track mouse movement when pointer is locked
+        document.addEventListener('mousemove', (e) => {
+            if (document.pointerLockElement === gameContainer) {
+                this.mousePosition.x += e.movementX;
+                this.mousePosition.y += e.movementY;
+
+                // Update target rotation based on mouse movement
+                this.targetCameraRotation.y -= e.movementX * this.mouseSensitivity * 0.01;
+                this.targetCameraRotation.x -= e.movementY * this.mouseSensitivity * 0.01;
+
+                // Clamp vertical rotation to prevent camera flipping
+                this.targetCameraRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.targetCameraRotation.x));
+            }
+        });
+        // Toggle pointer lock on container click
+        gameContainer.addEventListener('click', () => {
+            if (!this.mouseLookEnabled) return;
+
+            if (document.pointerLockElement !== gameContainer) {
+                gameContainer.requestPointerLock();
+            }
+        });
+
+        // Handle pointer lock change
+        document.addEventListener('pointerlockchange', () => {
+            this.mouseLookEnabled = document.pointerLockElement === gameContainer;
+        });
+
+        // Add key handler for enabling/disabling mouse look
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'm' || e.key === 'M') {
+                this.toggleMouseLook();
+            }
+        });
+
+        console.log("Mouse controls initialized");
+    }
+
+    public toggleMouseLook(): void {
+        this.mouseLookEnabled = !this.mouseLookEnabled;
+
+        const gameContainer = this.renderer?.domElement.parentElement;
+
+        if (this.mouseLookEnabled && gameContainer) {
+            gameContainer.requestPointerLock();
+            this.showMessage("Mouse look enabled - Click game to capture mouse");
+        } else {
+            document.exitPointerLock();
+            this.showMessage("Mouse look disabled");
+        }
+    }
+
+    private switchCamera(): void {
+        const views = Object.keys(this.cameraOffsets) as CameraView[];
+        const currentIndex = views.indexOf(this.gameSettings.currentCameraView);
+        const nextIndex = (currentIndex + 1) % views.length;
+
+        this.gameSettings.currentCameraView = views[nextIndex];
+
+        // Reset camera rotation when switching modes
+        this.targetCameraRotation.set(0, 0, 0);
+        this.currentCameraRotation.set(0, 0, 0);
+        this.mousePosition = { x: 0, y: 0 };
+
+        // Update HUD
+        if (this.updateHUDCallback) {
+            this.updateHUDCallback(this.gameSettings);
+        }
+
+        // Show message
+        this.showMessage(`Camera: ${this.gameSettings.currentCameraView}`);
+    }
 
     // Keyboard state
     private keys: Record<string, boolean> = {};
@@ -85,14 +172,14 @@ export class GameService {
     public setupScene(container: HTMLElement): void {
         try {
             console.log("Setting up THREE.js scene");
-            
+
             // Force WebGL detection check
             if (!window.WebGLRenderingContext) {
                 console.error("WebGL is not supported by your browser");
                 this.showMessage("WebGL is not supported by your browser");
                 return;
             }
-            
+
             // Check if container is valid
             if (!container) {
                 console.error("Container element is null or undefined");
@@ -103,31 +190,31 @@ export class GameService {
             while (container.firstChild) {
                 container.removeChild(container.firstChild);
             }
-            
+
             // Create scene first
             this.scene = new THREE.Scene();
             this.scene.background = new THREE.Color(0x87CEEB); // Set sky blue background
             console.log("Scene created");
-            
+
             // Add simple ambient light immediately for visibility
             const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
             this.scene.add(ambientLight);
-            
+
             // Create camera with proper positioning
             this.camera = new THREE.PerspectiveCamera(
-                75, 
-                window.innerWidth / window.innerHeight, 
-                0.1, 
+                75,
+                window.innerWidth / window.innerHeight,
+                0.1,
                 10000
             );
             // Position the camera initially for visibility
             this.camera.position.set(0, 30, 50);
             this.camera.lookAt(0, 0, 0);
             console.log("Camera created");
-            
+
             // Create renderer with explicit parameters
             try {
-                this.renderer = new THREE.WebGLRenderer({ 
+                this.renderer = new THREE.WebGLRenderer({
                     antialias: true,
                     alpha: false,
                     powerPreference: 'default',
@@ -138,26 +225,26 @@ export class GameService {
                     preserveDrawingBuffer: false,
                     logarithmicDepthBuffer: false
                 });
-                
+
                 // Set renderer size explicitly to match container
                 this.renderer.setSize(
-                    container.clientWidth || window.innerWidth, 
+                    container.clientWidth || window.innerWidth,
                     container.clientHeight || window.innerHeight
                 );
                 this.renderer.setPixelRatio(window.devicePixelRatio);
-                
+
                 // Set clear color to ensure visibility
                 this.renderer.setClearColor(0x87CEEB, 1);
-                
+
                 // Append canvas to container
                 container.appendChild(this.renderer.domElement);
                 console.log("Renderer created and added to container");
-                
+
                 // Make sure the renderer canvas has the correct size
                 this.renderer.domElement.style.width = '100%';
                 this.renderer.domElement.style.height = '100%';
                 this.renderer.domElement.style.display = 'block';
-                
+
                 // Add debug info
                 console.log("Renderer capabilities:", {
                     isWebGL2: this.renderer.capabilities.isWebGL2,
@@ -169,7 +256,7 @@ export class GameService {
                 this.showMessage("Failed to create 3D renderer. Try a different browser.");
                 return;
             }
-            
+
             // Create a large visible debug cube to ensure rendering works
             const cubeGeometry = new THREE.BoxGeometry(20, 20, 20);
             const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
@@ -177,35 +264,41 @@ export class GameService {
             this.debugCube.position.set(0, 10, 0);
             this.scene.add(this.debugCube);
             console.log("Added debug cube to scene");
-            
+
             // Perform a single render to test
             if (this.renderer && this.scene && this.camera) {
                 console.log("Performing initial render test");
                 this.renderer.render(this.scene, this.camera);
             }
-            
+
             // Create player object
             this.player = new THREE.Object3D();
             this.player.position.set(2, 8, 50);
             if (this.scene) this.scene.add(this.player);
             console.log("Player object created");
-            
+
             // Create ground
             this.createBasicGround();
             console.log("Basic ground created");
-            
+
             // Make player object available globally
             window.player = this.player;
-            
+
             // Handle window resize
             window.addEventListener('resize', this.handleResize.bind(this));
             console.log("Window resize handler attached");
-            
+
             // Create the initial plane
             this.createInitialPlane();
             console.log("Initial plane created");
+
+            // FIX: Add createEnvironment call here
+            this.createEnvironment();
+            console.log("Environment created");
         } catch (error) {
             console.error("Error setting up scene:", error);
+            // FIX: Add fallback ground if scene setup fails
+            this.createFallbackGround();
             throw error;
         }
     }
@@ -215,24 +308,31 @@ export class GameService {
      */
     private createBasicGround(): void {
         if (!this.scene) return;
-        
-        // Create a simple green ground plane
-        const groundGeometry = new THREE.PlaneGeometry(10000, 10000);
-        const groundMaterial = new THREE.MeshBasicMaterial({ 
-            color: 0x7CFC00, 
-            side: THREE.DoubleSide 
-        });
-        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-        ground.rotation.x = -Math.PI / 2;
-        ground.position.y = 0;
-        this.scene.add(ground);
+
+        try {
+            // Create a simple green ground plane
+            const groundGeometry = new THREE.PlaneGeometry(10000, 10000);
+            const groundMaterial = new THREE.MeshBasicMaterial({
+                color: 0x7CFC00,
+                side: THREE.DoubleSide
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = 0;
+            this.scene.add(ground);
+        } catch (error) {
+            console.error("Error creating basic ground:", error);
+            // FIX: Call fallback ground creation if basic ground fails
+            this.createFallbackGround();
+        }
     }
+
     /**
      * Create the initial plane for the player
      */
     private createInitialPlane(): void {
         if (!this.scene || !this.player) return;
-        
+
         try {
             // Create a basic visible box as a fallback plane
             const planeBox = new THREE.Mesh(
@@ -240,7 +340,7 @@ export class GameService {
                 new THREE.MeshBasicMaterial({ color: 0x00ff00 })
             );
             this.player.add(planeBox);
-            
+
             // Try to create the actual plane
             const planeType = 'planeOne';
             this.currentPlane = new Plane(
@@ -252,7 +352,7 @@ export class GameService {
                 this.showMessage.bind(this),
                 this.createEnhancedExplosion.bind(this)
             );
-            
+
             // Remove the fallback if real plane creation succeeded
             if (this.currentPlane) {
                 this.player.remove(planeBox);
@@ -338,15 +438,15 @@ export class GameService {
             console.error("Cannot handle resize: camera or renderer is null");
             return;
         }
-        
+
         const width = window.innerWidth;
         const height = window.innerHeight;
-        
+
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(width, height);
         console.log(`Resized renderer to ${width}x${height}`);
-        
+
         // Force a render after resize
         if (this.scene) {
             this.renderer.render(this.scene, this.camera);
@@ -360,7 +460,7 @@ export class GameService {
         window.addEventListener('keydown', (e) => {
             this.keys[e.key] = true;
         });
-        
+
         window.addEventListener('keyup', (e) => {
             this.keys[e.key] = false;
         });
@@ -442,25 +542,6 @@ export class GameService {
     }
 
     /**
-     * Switch camera view
-     */
-    private switchCamera(): void {
-        const views = Object.keys(this.cameraOffsets) as CameraView[];
-        const currentIndex = views.indexOf(this.gameSettings.currentCameraView);
-        const nextIndex = (currentIndex + 1) % views.length;
-
-        this.gameSettings.currentCameraView = views[nextIndex];
-
-        // Update HUD
-        if (this.updateHUDCallback) {
-            this.updateHUDCallback(this.gameSettings);
-        }
-
-        // Show message
-        this.showMessage(`מצלמה: ${this.gameSettings.currentCameraView}`);
-    }
-
-    /**
      * Show in-game message
      */
     private showMessage(message: string): void {
@@ -475,12 +556,12 @@ export class GameService {
     public startGameLoop(): void {
         // Set game as started
         this.gameSettings.gameStarted = true;
-        
+
         // Update HUD
         if (this.updateHUDCallback) {
             this.updateHUDCallback(this.gameSettings);
         }
-        
+
         console.log("Starting animation loop");
         // Start animation loop
         this.animate();
@@ -494,7 +575,7 @@ export class GameService {
         if (this.animationFrameId) {
             cancelAnimationFrame(this.animationFrameId);
         }
-        
+
         // Request next frame
         this.animationFrameId = requestAnimationFrame(this.animate);
 
@@ -504,7 +585,7 @@ export class GameService {
                 this.debugCube.rotation.x += 0.01;
                 this.debugCube.rotation.y += 0.01;
             }
-            
+
             // Update player and camera if they exist
             if (this.player && this.camera) {
                 // Simple movement for testing
@@ -512,18 +593,26 @@ export class GameService {
                 if (this.keys['ArrowDown']) this.player.position.z += 1;
                 if (this.keys['ArrowLeft']) this.player.position.x -= 1;
                 if (this.keys['ArrowRight']) this.player.position.x += 1;
-                
+
                 // Update camera position
                 const cameraOffset = this.cameraOffsets[this.gameSettings.currentCameraView];
                 this.camera.position.copy(this.player.position).add(cameraOffset);
                 this.camera.lookAt(this.player.position);
             }
-            
+
             // Update current plane if it exists
             if (this.currentPlane) {
                 this.currentPlane.update(this.keys);
+
+                // FIX: Add collision detection for bullets and balloons
+                if (this.currentPlane.bullets.length > 0 && this.balloons.length > 0) {
+                    this.checkCollisions(this.currentPlane.bullets, this.balloons);
+                }
             }
-            
+
+            // FIX: Add environment updates
+            this.updateEnvironment();
+
             // Render scene
             if (this.renderer && this.scene && this.camera) {
                 this.renderer.render(this.scene, this.camera);
@@ -533,8 +622,44 @@ export class GameService {
         } catch (error) {
             console.error("Error in animation loop:", error);
         }
-    };
 
+        // Get base camera position from selected view mode
+        const cameraOffset = this.cameraOffsets[this.gameSettings.currentCameraView].clone();
+
+        // Smooth camera rotation transition
+        this.currentCameraRotation.x += (this.targetCameraRotation.x - this.currentCameraRotation.x) * this.rotationSmoothing;
+        this.currentCameraRotation.y += (this.targetCameraRotation.y - this.currentCameraRotation.y) * this.rotationSmoothing;
+
+        // Create rotation quaternion from Euler angles
+        const cameraRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(
+            this.currentCameraRotation.x,
+            this.currentCameraRotation.y,
+            0
+        ));
+
+        // Apply rotation to the offset vector for orbiting in TPS modes
+        if (this.gameSettings.currentCameraView !== CameraView.FPS) {
+            cameraOffset.applyQuaternion(cameraRotation);
+        }
+
+        // Set camera position relative to player
+        this.camera.position.copy(this.player.position).add(cameraOffset);
+
+        // Set camera orientation
+        if (this.gameSettings.currentCameraView === CameraView.FPS) {
+            // In FPS mode, rotate the camera directly (looking from cockpit)
+            this.camera.quaternion.copy(this.player.quaternion);
+            this.camera.rotateX(this.currentCameraRotation.x);
+            this.camera.rotateY(this.currentCameraRotation.y);
+        } else {
+            // In TPS modes, always look at the player
+            this.camera.lookAt(this.player.position);
+        }
+
+
+    }
+
+    
     /**
      * Create game environment
      */
@@ -933,11 +1058,11 @@ export class GameService {
      */
     public createEnhancedExplosion(position: THREE.Vector3): void {
         if (!this.scene) return;
-        
+
         try {
             // Simple explosion effect
             const explosionGeometry = new THREE.SphereGeometry(5, 16, 16);
-            const explosionMaterial = new THREE.MeshBasicMaterial({ 
+            const explosionMaterial = new THREE.MeshBasicMaterial({
                 color: 0xffff00,
                 transparent: true,
                 opacity: 0.8
@@ -945,14 +1070,14 @@ export class GameService {
             const explosion = new THREE.Mesh(explosionGeometry, explosionMaterial);
             explosion.position.copy(position);
             this.scene.add(explosion);
-            
+
             // Animate the explosion
             let scale = 1.0;
             const expandExplosion = () => {
                 scale += 0.1;
                 explosion.scale.set(scale, scale, scale);
                 explosion.material.opacity -= 0.05;
-                
+
                 if (explosion.material.opacity > 0) {
                     requestAnimationFrame(expandExplosion);
                 } else {

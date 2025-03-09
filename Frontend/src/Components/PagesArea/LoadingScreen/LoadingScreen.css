@@ -1,3 +1,204 @@
-.LoadingScreen {
-	
-}
+/* LoadingScreen.css */
+
+.loading-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    direction: rtl;
+    padding: 2rem;
+    overflow: auto;
+  }
+  
+  .loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 3rem;
+  }
+  
+  .game-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    color: #f5f5f5;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(37, 117, 252, 0.8), 0 0 20px rgba(106, 17, 203, 0.6);
+    background-image: linear-gradient(45deg, #2575fc, #6a11cb);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: 1px;
+  }
+  
+  .loading-bar-container {
+    width: 100%;
+    height: 24px;
+    background-color: #222;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+    margin-bottom: 1rem;
+  }
+  
+  .loading-bar {
+    height: 100%;
+    background-image: linear-gradient(45deg, #2575fc, #6a11cb);
+    border-radius: 12px;
+    transition: width 0.3s ease-out;
+    box-shadow: 0 0 10px rgba(37, 117, 252, 0.8);
+  }
+  
+  .loading-text {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #f5f5f5;
+    text-align: center;
+  }
+  
+  .start-button {
+    background-image: linear-gradient(45deg, #2575fc, #6a11cb);
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(37, 117, 252, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .start-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(37, 117, 252, 0.6);
+  }
+  
+  .start-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(37, 117, 252, 0.4);
+  }
+  
+  .pulse {
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(37, 117, 252, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 15px rgba(37, 117, 252, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(37, 117, 252, 0);
+    }
+  }
+  
+  .loading-tips {
+    width: 100%;
+    max-width: 800px;
+    background-color: rgba(34, 34, 34, 0.8);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  .loading-tips h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #f5f5f5;
+    text-align: center;
+    border-bottom: 2px solid rgba(37, 117, 252, 0.5);
+    padding-bottom: 0.5rem;
+  }
+  
+  .tips-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .tip {
+    background-color: rgba(17, 17, 17, 0.6);
+    border-radius: 8px;
+    padding: 1.25rem;
+    border-left: 4px solid #2575fc;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .tip:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .tip h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+    color: #2575fc;
+  }
+  
+  .tip p {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #d0d0d0;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .loading-content {
+      max-width: 90%;
+    }
+    
+    .game-title {
+      font-size: 2.5rem;
+    }
+    
+    .tips-container {
+      grid-template-columns: 1fr;
+    }
+    
+    .loading-tips {
+      padding: 1rem;
+    }
+  }
+  
+  /* Animation for tips */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .tip:nth-child(1) { animation: fadeIn 0.5s ease 0.2s forwards; }
+  .tip:nth-child(2) { animation: fadeIn 0.5s ease 0.4s forwards; }
+  .tip:nth-child(3) { animation: fadeIn 0.5s ease 0.6s forwards; }
+  .tip:nth-child(4) { animation: fadeIn 0.5s ease 0.8s forwards; }
+  
+  /* Initially hide tips for animation */
+  .tip {
+    opacity: 0;
+  }
+  
+  /* RTL specific adjustments */
+  .loading-screen[dir="rtl"] .tip,
+  [dir="rtl"] .loading-screen .tip {
+    border-left: none;
+    border-right: 4px solid #2575fc;
+  }

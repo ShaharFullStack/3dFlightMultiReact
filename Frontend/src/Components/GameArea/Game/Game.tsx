@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { CameraView, GameSettings } from '../../../Models/GameModels';
 import networkClient from '../../../Services/NetworkClient';
-import gameService from '../../../Services/GameService';
+import gameService from '../../../Services/GameService'; // <-- וודא שזה העותק המתוקן של GameService
 import audioService from '../../../Services/AudioService';
 import LoadingScreen from '../../PagesArea/LoadingScreen/LoadingScreen';
 import GameUI from '../GameUi/GameUi';
@@ -11,27 +11,31 @@ import './Game.css';
 
 function Game(): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
+
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [playerName, setPlayerName] = useState("");
   const [gameStarted, setGameStarted] = useState(false);
   const [assetLoadingFailed, setAssetLoadingFailed] = useState(false);
   const gameInitializedRef = useRef(false);
+
+  // הגדרות משחק ראשוניות
   const [gameSettings, setGameSettings] = useState<GameSettings>({
     multiplayerEnabled: false,
-    currentCameraView: CameraView.TPS,
+    currentCameraView: CameraView.TPS, // מצלמה התחלתית = TPS
     gameStarted: false,
     score: 0,
     difficultyLevel: 1
   });
 
-  // Mock user for testing if Redux user is not available
+  // משתמש Mock אם אין Redux
   const [mockUser] = useState({
     firstName: "Guest",
     lastName: "Player",
   });
 
   const navigate = useNavigate();
+
   // Access current user from Redux store
   const user = useSelector((state: any) => state.user?.user);
 
@@ -40,15 +44,17 @@ function Game(): JSX.Element {
     console.log("Current user state:", user);
   }, [user]);
 
+  // ------------------------------------------------
+  // 1. טיפול בטעינת נכסים + מסך טעינה (LoadingScreen)
+  // ------------------------------------------------
   useEffect(() => {
-    // Use either Redux user or mock user for testing
+    // בוחרים משתמש מה-Redux או MOCK
     const currentUser = user || mockUser;
-
-    // Set player name
+    // מגדירים את שם השחקן
     setPlayerName(`${currentUser.firstName} ${currentUser.lastName}`);
     console.log("Setting player name:", `${currentUser.firstName} ${currentUser.lastName}`);
 
-    // Function to check if asset exists by creating an appropriate element
+    // פונקציה לבדיקת קיום של Asset
     const checkAssetExists = (path: string, type: 'image' | 'audio'): Promise<boolean> => {
       return new Promise(resolve => {
         if (type === 'image') {
@@ -65,13 +71,13 @@ function Game(): JSX.Element {
       });
     };
 
-    // Asset paths to check
+    // נתיבי קבצים לבדיקה
     const assetsToCheck = [
       { path: '/assets/images/grass_top.jpg', type: 'image' as const },
       { path: '/assets/music/Scratch Dog.mp3', type: 'audio' as const }
     ];
 
-    // Try alternative paths if original fails
+    // ננסה למקם כל Asset בכמה Prefix-ים שונים
     const tryAssetWithAlternatives = async (asset: { path: string, type: 'image' | 'audio' }): Promise<boolean> => {
       const prefixes = ['', './', '../', '/public/', 'public/'];
       
@@ -89,29 +95,30 @@ function Game(): JSX.Element {
       return false;
     };
 
-    // Use a controlled loading process with asset checking
+    // טעינת אחוזי התקדמות (Fake) + בדיקת נכסים
     let loadingTimerId: NodeJS.Timeout | null = null;
     let currentProgress = 0;
     
     const advanceLoading = async () => {
-      // Start asset checking on first call
+      // עלייה ראשונה, בודקים אם כל הנכסים תקינים
       if (currentProgress === 0) {
         let assetCheckPromises = assetsToCheck.map(asset => tryAssetWithAlternatives(asset));
         const assetResults = await Promise.all(assetCheckPromises);
         
-        // If all assets failed, mark as failed but continue loading
+        // אם לא מצאנו אפילו אחד תקין, נגדיר assetLoadingFailed
         if (!assetResults.some(result => result)) {
           console.warn("All assets failed to load, using fallbacks");
           setAssetLoadingFailed(true);
         }
       }
       
-      // Only increment if below 100
+      // נעדכן את ה-Progress עד 100
       if (currentProgress < 100) {
         currentProgress += 4;
-        setLoadingProgress(Math.min(currentProgress, 100)); // Ensure it never exceeds 100
+        setLoadingProgress(Math.min(currentProgress, 100));
       }
       
+      // אם הגענו ל-100%, מפסיקים
       if (currentProgress >= 100) {
         if (loadingTimerId) {
           clearTimeout(loadingTimerId);
@@ -123,15 +130,16 @@ function Game(): JSX.Element {
       loadingTimerId = setTimeout(advanceLoading, 200);
     };
     
-    // Start the loading process
+    // התחלת התהליך
     advanceLoading();
     
+    // פונקציית נקיון
     return () => {
       if (loadingTimerId) {
         clearTimeout(loadingTimerId);
       }
 
-      // Clean up game resources when component unmounts
+      // אם הקומפוננטה יורדת (unmount) והמשחק רץ, ננקה משאבים
       if (gameStarted) {
         console.log("Cleaning up game resources...");
         if (gameSettings.multiplayerEnabled) {
@@ -143,11 +151,10 @@ function Game(): JSX.Element {
     };
   }, [navigate, gameStarted, gameSettings.multiplayerEnabled, user, mockUser]);
 
+  // כאשר הטעינה הגיעה ל-100%, נחכה שניה ואז נסיר את מסך הטעינה
   useEffect(() => {
-    // Start game when loading is complete
     if (loadingProgress === 100) {
       console.log("Loading complete, preparing to start game...");
-      // Ensure this timeout is executed to transition from loading screen to game
       setTimeout(() => {
         console.log("Setting isLoading to false");
         setIsLoading(false);
@@ -155,13 +162,16 @@ function Game(): JSX.Element {
     }
   }, [loadingProgress]);
 
-  const handleStartGame = React.useCallback(() => {
+  // ------------------------------------------------
+  // 2. פונקציה שתפעיל את המשחק ממש (אחרי שהמסך ירד)
+  // ------------------------------------------------
+  const handleStartGame = useCallback(() => {
     if (!containerRef.current) {
       console.error("Container ref is null, cannot start game");
       return;
     }
 
-    // Prevent multiple initializations
+    // למנוע ריצה כפולה
     if (gameInitializedRef.current) {
       console.log("Game already initialized, skipping");
       return;
@@ -170,26 +180,27 @@ function Game(): JSX.Element {
     try {
       gameInitializedRef.current = true;
       console.log("Initializing game...");
-      // Initialize game
+      // 1) אתחול gameService (setupMouseListeners וכו')
       gameService.initialize(showMessage, updateGameSettings);
 
       console.log("Setting up game scene...");
-      // Setup scene
+      // 2) יצירת סצנה
       gameService.setupScene(containerRef.current);
 
       console.log("Starting game loop...");
-      // Start main game loop
+      // 3) לולאת עדכון
       gameService.startGameLoop();
 
       console.log("Starting audio...");
-      // Start audio
+      // 4) מוזיקה
       audioService.setMessageCallback(showMessage);
       audioService.playMusic();
 
+      // סמן שהמשחק החל
       setGameStarted(true);
       console.log("Game started successfully");
 
-      // If asset loading failed, show a warning message
+      // אם נכשל הטעינה (דגל assetLoadingFailed), מציגים אזהרה
       if (assetLoadingFailed) {
         setTimeout(() => {
           showMessage("Some assets couldn't be loaded. Using fallback graphics and audio.");
@@ -199,23 +210,28 @@ function Game(): JSX.Element {
       console.error("Failed to start game:", error);
       showMessage("Error starting game. Check console for details.");
       
-      // Reset the initialization flag so we can try again
+      // אם נכשל, אפשר לנסות שוב
       gameInitializedRef.current = false;
 
-      // Fallback to return to loading screen if game fails to start
+      // נחזור למסך טעינה
       setIsLoading(true);
       setLoadingProgress(0);
     }
   }, [containerRef, assetLoadingFailed]);
 
+  // ------------------------------------------------
+  // 3. פונקציות עזר להודעות / עידכון מצב / מולטיפלייר
+  // ------------------------------------------------
   const showMessage = (message: string) => {
     console.log("Game message:", message);
+
+    // יצירת div צף למסרים
     const messageDiv = document.createElement('div');
     messageDiv.style.position = 'absolute';
     messageDiv.style.top = '20%';
     messageDiv.style.left = '10%';
     messageDiv.style.backgroundColor = 'black';
-    messageDiv.style.color = 'white'; // Ensure text is visible
+    messageDiv.style.color = 'white'; 
     messageDiv.style.padding = '30px';
     messageDiv.style.fontSize = '34px';
     messageDiv.style.borderRadius = '5px';
@@ -236,6 +252,7 @@ function Game(): JSX.Element {
     setGameSettings(settings);
   };
 
+  // כפתור Toggle בממשק (מפעיל / מכבה Multiplayer)
   const handleToggleMultiplayer = () => {
     if (!gameStarted) return;
 
@@ -272,7 +289,9 @@ function Game(): JSX.Element {
     showMessage(newMultiplayerState ? "מצב מרובה משתתפים: מופעל" : "מצב מרובה משתתפים: מבוטל");
   };
 
-  // Network event handlers
+  // ------------------------------------------------
+  // 4. האזנה לאירועי Multiplayer (כניסה, יציאה, יריות וכו')
+  // ------------------------------------------------
   const handleConnected = (playerId: string, gameState: any) => {
     console.log("Connected to server, player ID:", playerId);
     gameService.initializeMultiplayer(gameState);
@@ -333,7 +352,10 @@ function Game(): JSX.Element {
     gameService.addChatMessage(`${playerName}: ${message}`);
   };
 
-  // Ensure direct initialization when button is clicked
+  // ------------------------------------------------
+  // 5. אם המסך כבר לא ב-Loading והמשחק לא התחיל עדיין,
+  //    נפעיל את handleStartGame() אוטומטית
+  // ------------------------------------------------
   useEffect(() => {
     if (!isLoading && !gameStarted && containerRef.current && !gameInitializedRef.current) {
       console.log("Auto-starting game after loading screen closed");
@@ -343,9 +365,13 @@ function Game(): JSX.Element {
 
   console.log("Rendering Game component, isLoading:", isLoading, "gameStarted:", gameStarted);
 
+  // ------------------------------------------------
+  // 6. JSX סופי
+  // ------------------------------------------------
   return (
     <div className="game-page">
       {isLoading ? (
+        // מסך טעינה
         <LoadingScreen
           progress={loadingProgress}
           onStart={() => {
@@ -355,8 +381,12 @@ function Game(): JSX.Element {
           showStartButton={loadingProgress === 100}
         />
       ) : (
+        // אם לא בטעינה, מציגים את קנבס ה-3D ואת ה-UI
         <>
+          {/* אלמנט DIV שה-Renderer של Three.js מוחדר אליו */}
           <div ref={containerRef} className="game-container"></div>
+
+          {/* ממשק המשחק (כפתורים, מידע, וכו') */}
           <GameUI
             settings={gameSettings}
             playerName={playerName}
