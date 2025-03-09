@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../../Redux/Store";
 import { userActions } from "../../../Redux/UserSlice";
 import { userService } from "../../../Services/UserService";
 import "./Header.css";
-import { UserModel } from "../../../Models/UserModel";
 
 function Header(): JSX.Element {
     const user = useSelector((state: AppState) => state.user);
