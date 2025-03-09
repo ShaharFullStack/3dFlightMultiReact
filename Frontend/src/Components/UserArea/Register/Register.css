@@ -1,60 +1,163 @@
-/* Register.css */
+/* Register.css - Styling for the Flight Simulator Registration Component */
 
 .Register {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; 
-    font-size: 24px;
-}
-
-.Register form {
-    background-color: --bg-primary;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .Register form {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 16px;
     width: 100%;
     max-width: 450px;
-    text-align: center;
-}
-
-.Register form .MuiTextField-root {
-    margin-bottom: 20px;
-}
-
-.Register form .MuiButton-root {
-    background-color: #007bff;
-    color: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .Register form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #0ea5e9, #3b82f6, #818cf8);
+    z-index: 1;
+  }
+  
+  /* Overriding Material UI styles for better integration with our theme */
+  
+  /* Input fields */
+  .Register .MuiTextField-root {
+    margin-bottom: 1.25rem;
+  }
+  
+  .Register .MuiInputBase-root {
+    background-color: rgba(30, 41, 59, 0.5);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .Register .MuiInputBase-root:hover {
+    background-color: rgba(51, 65, 85, 0.5);
+  }
+  
+  .Register .MuiInputBase-root.Mui-focused {
+    background-color: rgba(51, 65, 85, 0.7);
+  }
+  
+  .Register .MuiInputLabel-root {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .Register .MuiInputLabel-root.Mui-focused {
+    color: #38bdf8;
+  }
+  
+  .Register .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .Register .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .Register .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #38bdf8;
+    border-width: 2px;
+  }
+  
+  .Register .MuiInputBase-input {
+    color: white;
+    padding: 1rem;
+  }
+  
+  .Register .MuiFormHelperText-root {
+    color: #fb7185;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+  }
+  
+  /* Button */
+  .Register .MuiButton-root {
+    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+    color: white;
+    padding: 0.75rem 2.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    transition: all 0.3s ease;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    margin-top: 1rem;
     width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    text-transform: none; /* Disable uppercase transformation */
-}
-
-.Register form .MuiButton-root:hover {
-    background-color: #0056b3;
-}
-
-.Register form .MuiButton-root:focus {
-    outline: none;
-    box-shadow: 0 0 10px #007bff;
-}
-.Register .MuiInputLabel-root {
-    color: #b0bec5;
-}
-
-.Register .MuiInputLabel-root.Mui-focused {
-    color: #00f0ff;
-}
-
-.Register .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 240, 255, 0.4);
-}
-
-.Register .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 240, 255, 0.8);
-}
-
-.Register .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(57, 255, 20, 0.9);
-}
+  }
+  
+  .Register .MuiButton-root:hover {
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4);
+    transform: translateY(-2px);
+  }
+  
+  .Register .MuiButton-root:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
+  }
+  
+  /* Add title above form */
+  .Register form::after {
+    content: "Create Your Account";
+    display: block;
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Login link styling */
+  .Register .login-link {
+    display: block;
+    text-align: center;
+    margin-top: 1.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .Register .login-link:hover {
+    color: #38bdf8;
+  }
+  
+  /* Media Queries */
+  @media (max-width: 600px) {
+    .Register form {
+      padding: 2rem 1.5rem;
+    }
+    
+    .Register form::after {
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+  }
+  
+  /* RTL Support */
+  [dir="rtl"] .Register form::before {
+    background: linear-gradient(270deg, #0ea5e9, #3b82f6, #818cf8);
+  }

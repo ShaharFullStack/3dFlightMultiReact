@@ -1,64 +1,148 @@
+/* Login.css - Styling for the Flight Simulator Login Component */
+
 .Login {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-}
-
-.Login form {
-    width: 30%;
-    background: rgba(14, 16, 38, 0.95);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 240, 255, 0.2),
-                0 4px 30px rgba(57, 255, 20, 0.1);
-    transition: all 0.3s;
-}
-
-.Login .MuiInputBase-root {
-    color: #ffffff;
-    background-color: rgba(14, 16, 38, 0.8);
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .Login form {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .Login form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #0ea5e9, #3b82f6, #818cf8);
+    z-index: 1;
+  }
+  
+  /* Overriding Material UI styles for better integration with our theme */
+  
+  /* Input fields */
+  .Login .MuiTextField-root {
+    margin-bottom: 1.25rem;
+  }
+  
+  .Login .MuiInputBase-root {
+    background-color: rgba(30, 41, 59, 0.5);
     border-radius: 8px;
-    padding: 10px;
-    box-shadow: inset 0 2px 5px rgba(0, 240, 255, 0.2);
-}
-
-
-.Login button {
-    background: linear-gradient(90deg, rgba(0, 240, 255, 1), rgba(57, 255, 20, 0.8));
-    color: #ffffff !important;
-    font-size: 18px !important;
-    font-weight: bold !important;
-    padding: 15px 0 !important;
-    border-radius: 30px !important;
-    box-shadow: 0 4px 15px rgba(0, 240, 255, 0.4),
-                0 4px 30px rgba(57, 255, 20, 0.2);
-    transition: all 0.3s ease !important;
-}
-
-.Login button:hover {
-    background: linear-gradient(90deg, rgba(57, 255, 20, 1), rgba(0, 240, 255, 0.8));
-    transform: scale(1.05);
-    box-shadow: 0 8px 30px rgba(0, 240, 255, 0.6),
-                0 8px 60px rgba(57, 255, 20, 0.4);
-}
-
-.Login .MuiInputLabel-root {
-    color: #b0bec5;
-}
-
-.Login .MuiInputLabel-root.Mui-focused {
-    color: #00f0ff;
-}
-
-.Login .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 240, 255, 0.4);
-}
-
-.Login .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 240, 255, 0.8);
-}
-
-.Login .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(57, 255, 20, 0.9);
-}
+    transition: all 0.3s ease;
+  }
+  
+  .Login .MuiInputBase-root:hover {
+    background-color: rgba(51, 65, 85, 0.5);
+  }
+  
+  .Login .MuiInputBase-root.Mui-focused {
+    background-color: rgba(51, 65, 85, 0.7);
+  }
+  
+  .Login .MuiInputLabel-root {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .Login .MuiInputLabel-root.Mui-focused {
+    color: #38bdf8;
+  }
+  
+  .Login .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .Login .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .Login .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #38bdf8;
+    border-width: 2px;
+  }
+  
+  .Login .MuiInputBase-input {
+    color: white;
+    padding: 1rem;
+  }
+  
+  .Login .MuiFormHelperText-root {
+    color: #fb7185;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+  }
+  
+  /* Button */
+  .Login .MuiButton-root {
+    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+    color: white;
+    padding: 0.75rem 2.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    transition: all 0.3s ease;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  
+  .Login .MuiButton-root:hover {
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4);
+    transform: translateY(-2px);
+  }
+  
+  .Login .MuiButton-root:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
+  }
+  
+  /* Add title above form */
+  .Login form::after {
+    content: "Flight Simulator Login";
+    display: block;
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Media Queries */
+  @media (max-width: 600px) {
+    .Login form {
+      padding: 2rem 1.5rem;
+    }
+    
+    .Login form::after {
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+  }
+  
+  /* RTL Support */
+  [dir="rtl"] .Login form::before {
+    background: linear-gradient(270deg, #0ea5e9, #3b82f6, #818cf8);
+  }

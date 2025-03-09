@@ -9,10 +9,10 @@ import { Login } from '../../UserArea/Login/Login';
 
 
 // Lazy-loaded components
-const Leaderboard = lazy(() => import('../../GameArea/Leaderboard/Leaderboard').then(module => ({ default: module.Leaderboard })));
+const Leaderboard = lazy(() => import('../../GameArea/Leaderboard/Leaderboard'));
 const Game = lazy(() => import('../../GameArea/Game/Game'));
 const Settings = lazy(() => import('../../GameArea/Settings/Settings'));
-const About = lazy(() => import('../../PagesArea/About/About').then(module => ({ default: module.About })));
+const About = lazy(() => import('../../PagesArea/About/About'));
 const Register = lazy(() => import('../../UserArea/Register/Register').then(module => ({ default: module.Register })));
 
 function Routing(): JSX.Element {

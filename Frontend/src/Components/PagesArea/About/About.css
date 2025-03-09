@@ -1,3 +1,399 @@
-.About {
-	
-}
+/* About.css - Styling for the Flight Simulator About Component */
+
+.about-container {
+    background-color: #1a1a2e;
+    color: #e6e6e6;
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+  }
+  
+  .about-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  /* Header Section */
+  .about-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    border-bottom: 2px solid #4361ee;
+    padding-bottom: 1rem;
+  }
+  
+  .about-header h1 {
+    color: #4cc9f0;
+    margin: 0;
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px rgba(76, 201, 240, 0.4);
+  }
+  
+  .back-button {
+    background-color: #4361ee;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  
+  .back-button:hover {
+    background-color: #3a56e8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+  }
+  
+  /* Section Styling */
+  .about-section {
+    margin-bottom: 4rem;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .about-section h2 {
+    color: #f72585;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #2b2b3d;
+  }
+  
+  .about-section p {
+    margin-bottom: 1.2rem;
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+  
+  /* Features Grid */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .feature-item {
+    background-color: rgba(43, 43, 61, 0.5);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .feature-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(76, 201, 240, 0.2);
+  }
+  
+  .feature-item h3 {
+    color: #4cc9f0;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+  }
+  
+  /* Aircraft List */
+  .aircraft-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+  
+  .aircraft-item {
+    display: flex;
+    background-color: rgba(43, 43, 61, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .aircraft-image {
+    width: 200px;
+    height: 150px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  
+  .plane-one {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,20 L60,40 L80,45 L60,50 L50,80 L40,50 L20,45 L40,40 Z' fill='%234cc9f0'/%3E%3C/svg%3E");
+  }
+  
+  .plane-two {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M30,30 L50,20 L70,30 L80,50 L50,60 L20,50 Z' fill='%23f72585'/%3E%3C/svg%3E");
+  }
+  
+  .plane-three {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,10 L65,40 L90,50 L65,60 L50,90 L35,60 L10,50 L35,40 Z' fill='%237209b7'/%3E%3C/svg%3E");
+  }
+  
+  .aircraft-details {
+    flex: 1;
+    padding: 1.5rem;
+  }
+  
+  .aircraft-details h3 {
+    color: #4cc9f0;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+  }
+  
+  /* Aircraft Stats */
+  .aircraft-stats {
+    margin-top: 1.5rem;
+  }
+  
+  .stat {
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .stat-label {
+    width: 80px;
+    font-weight: bold;
+    color: #b8b8b8;
+  }
+  
+  .stat-bar {
+    flex: 1;
+    height: 8px;
+    background-color: rgba(43, 43, 61, 0.8);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .stat-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4361ee, #4cc9f0);
+    border-radius: 4px;
+  }
+  
+  /* Team Grid */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .team-member {
+    background-color: rgba(43, 43, 61, 0.5);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .team-member-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    background-color: #3a3a50;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='40' r='20' fill='%234cc9f0'/%3E%3Cpath d='M30,80 C30,65 70,65 70,80 L70,90 L30,90 Z' fill='%234cc9f0'/%3E%3C/svg%3E");
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .team-member h3 {
+    color: #f72585;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Tech Stack */
+  .tech-stack {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  
+  .tech-item {
+    background-color: rgba(43, 43, 61, 0.5);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .tech-item h3 {
+    color: #4cc9f0;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 1.3rem;
+  }
+  
+  .tech-item ul {
+    padding-left: 1.5rem;
+  }
+  
+  .tech-item li {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Roadmap */
+  .roadmap {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  .roadmap-item {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .roadmap-marker {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    margin-top: 0.4rem;
+    position: relative;
+  }
+  
+  .roadmap-marker::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 2px;
+    height: calc(100% + 1.5rem);
+    background-color: #2b2b3d;
+    transform: translateX(-50%);
+  }
+  
+  .roadmap-item:last-child .roadmap-marker::after {
+    display: none;
+  }
+  
+  .roadmap-marker.planned {
+    background-color: #4cc9f0;
+  }
+  
+  .roadmap-marker.in-progress {
+    background-color: #7209b7;
+  }
+  
+  .roadmap-marker.under-review {
+    background-color: #f72585;
+  }
+  
+  .roadmap-content {
+    flex: 1;
+  }
+  
+  .roadmap-content h3 {
+    color: #e6e6e6;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+  }
+  
+  .roadmap-content p {
+    margin: 0;
+    color: #b8b8b8;
+  }
+  
+  /* Footer */
+  .about-footer {
+    text-align: center;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid #2b2b3d;
+    color: #b8b8b8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 992px) {
+    .about-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .aircraft-item {
+      flex-direction: column;
+    }
+    
+    .aircraft-image {
+      width: 100%;
+      height: 200px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .about-content {
+      padding: 1.5rem;
+    }
+    
+    .about-header h1 {
+      font-size: 2rem;
+    }
+    
+    .about-section h2 {
+      font-size: 1.5rem;
+    }
+    
+    .features-grid,
+    .team-grid,
+    .tech-stack {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .roadmap-item {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .roadmap-marker {
+      margin-left: 0.5rem;
+    }
+    
+    .roadmap-marker::after {
+      left: 0;
+      top: 25px;
+      width: calc(100% + 0.5rem);
+      height: 2px;
+      transform: none;
+    }
+  }
+  
+  /* RTL Support */
+  [dir="rtl"] .stat-label {
+    text-align: right;
+  }
+  
+  [dir="rtl"] .tech-item ul {
+    padding-right: 1.5rem;
+    padding-left: 0;
+  }
+  
+  [dir="rtl"] .roadmap-item {
+    flex-direction: row-reverse;
+  }
+  
+  [dir="rtl"] .roadmap-marker::after {
+    right: 50%;
+    left: auto;
+    transform: translateX(50%);
+  }

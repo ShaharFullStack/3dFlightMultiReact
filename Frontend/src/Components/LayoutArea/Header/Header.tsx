@@ -42,7 +42,6 @@ function Header(): JSX.Element {
                 <div className="logo-section">
                     <Link to="/" className="logo-link">
                         <div className="logo-container">
-                            <div className="logo-icon">🎈</div>
                             <h1>Balloon Fighter</h1>
                         </div>
                     </Link>

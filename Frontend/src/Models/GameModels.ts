@@ -24,9 +24,12 @@ export interface Velocity {
 export interface BulletModel {
     id: string;
     playerId: string;
-    position: Position;
-    velocity: Velocity;
+    position: { x: number; y: number; z: number };
+    velocity: { x: number; y: number; z: number };
     createdAt: number;
+  
+    // הוסף את השדה הזה:
+    mesh?: THREE.Mesh;
 }
 
 export interface BalloonModel {

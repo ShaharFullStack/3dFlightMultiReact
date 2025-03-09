@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { CameraView, GameSettings } from '../../../Models/GameModels';
 import networkClient from '../../../Services/NetworkClient';
-import gameService from '../../../Services/GameService'; // <-- וודא שזה העותק המתוקן של GameService
+import gameService from '../../../Services/GameService'; 
 import audioService from '../../../Services/AudioService';
 import LoadingScreen from '../../PagesArea/LoadingScreen/LoadingScreen';
 import GameUI from '../GameUi/GameUi';
@@ -96,13 +96,13 @@ function Game(): JSX.Element {
     };
 
     // טעינת אחוזי התקדמות (Fake) + בדיקת נכסים
-    let loadingTimerId: NodeJS.Timeout | null = null;
+    let loadingTimerId: ReturnType<typeof setTimeout> | null = null;
     let currentProgress = 0;
     
     const advanceLoading = async () => {
       // עלייה ראשונה, בודקים אם כל הנכסים תקינים
       if (currentProgress === 0) {
-        let assetCheckPromises = assetsToCheck.map(asset => tryAssetWithAlternatives(asset));
+        const assetCheckPromises = assetsToCheck.map(asset => tryAssetWithAlternatives(asset));
         const assetResults = await Promise.all(assetCheckPromises);
         
         // אם לא מצאנו אפילו אחד תקין, נגדיר assetLoadingFailed
