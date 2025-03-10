@@ -41,7 +41,7 @@ export class GameService {
     private balloons: THREE.Mesh[] = [];
     private remotePlayers: Record<string, PlayerModel> = {};
     private cameraOffsets: Record<string, THREE.Vector3> = {
-        [CameraView.FPS]: new THREE.Vector3(0, 2, -1),    // Front cockpit view
+        [CameraView.FPS]: new THREE.Vector3(0, 7, 2),    // Front cockpit view - מיקום בתוך תא הטייס
         [CameraView.TPS]: new THREE.Vector3(0, 10, 30),   // Third-person view
         [CameraView.TPS_FAR]: new THREE.Vector3(0, 40, 80) // Far third-person view
     };
@@ -130,7 +130,7 @@ export class GameService {
                 75,
                 window.innerWidth / window.innerHeight,
                 0.1,
-                2000
+                13000
             );
             // Position the camera initially for visibility
             this.camera.position.set(0, 30, 50);
@@ -746,10 +746,97 @@ export class GameService {
                 if (this.keys['ArrowLeft']) this.player.position.x -= 1;
                 if (this.keys['ArrowRight']) this.player.position.x += 1;
 
-                // Update camera position
-                const cameraOffset = this.cameraOffsets[this.gameSettings.currentCameraView];
-                this.camera.position.copy(this.player.position).add(cameraOffset);
-                this.camera.lookAt(this.player.position);
+                // יצירת מטריצת טרנספורמציה מקומית למטוס
+                const planeMatrix = new THREE.Matrix4();
+                planeMatrix.makeRotationFromQuaternion(this.player.quaternion);
+                planeMatrix.setPosition(this.player.position.x, this.player.position.y, this.player.position.z);
+                
+                // עדכון מיקום המצלמה בהתאם למצב הנוכחי
+                if (this.gameSettings.currentCameraView === CameraView.FPS) {
+                    // במצב FPS, המצלמה צריכה להיות מחוברת למטוס ולהסתובב איתו
+                    
+                    // מיקום המצלמה בתוך תא הטייס (מעט מעל ולפני מרכז המטוס)
+                    const cameraOffset = this.cameraOffsets[CameraView.FPS];
+                    
+                    // חישוב מיקום המצלמה במרחב העולמי
+                    const cameraPosition = new THREE.Vector3(cameraOffset.x, cameraOffset.y, cameraOffset.z);
+                    cameraPosition.applyMatrix4(planeMatrix);
+                    this.camera.position.copy(cameraPosition);
+                    
+                    // חישוב כיוון המבט של המצלמה (קדימה ביחס למטוס)
+                    const lookAtVector = new THREE.Vector3(0, 0, -10); // נקודה 10 יחידות קדימה
+                    lookAtVector.applyMatrix4(planeMatrix);
+                    this.camera.lookAt(lookAtVector);
+                    
+                    // עדכון הרוטציה של המצלמה להיות זהה לרוטציה של המטוס
+                    this.camera.quaternion.copy(this.player.quaternion);
+                } else if (this.gameSettings.currentCameraView === CameraView.TPS) {
+                    // במצב TPS, המצלמה מאחורי המטוס ועוקבת אחרי הסיבוב שלו
+                    
+                    // מיקום המצלמה מאחורי ומעל המטוס
+                    const cameraOffset = this.cameraOffsets[CameraView.TPS];
+                    
+                    // ווקטור הכיוון הקדמי של המטוס
+                    const forwardVector = new THREE.Vector3(0, 0, 1);
+                    forwardVector.applyQuaternion(this.player.quaternion);
+                    
+                    // ווקטור הכיוון כלפי מעלה של המטוס
+                    const upVector = new THREE.Vector3(0, 1, 0);
+                    upVector.applyQuaternion(this.player.quaternion);
+                    
+                    // חישוב מיקום המצלמה ביחס למטוס
+                    const cameraPosition = new THREE.Vector3();
+                    cameraPosition.copy(this.player.position);
+                    cameraPosition.add(forwardVector.multiplyScalar(cameraOffset.z)); // מאחורי המטוס
+                    cameraPosition.add(upVector.multiplyScalar(cameraOffset.y)); // מעל המטוס
+                    
+                    this.camera.position.copy(cameraPosition);
+                    this.camera.lookAt(this.player.position);
+                    
+                    // הוספת קצת הטיה למצלמה כך שהיא תסתובב באותו כיוון כמו המטוס
+                    const targetQuaternion = new THREE.Quaternion();
+                    targetQuaternion.setFromRotationMatrix(
+                        new THREE.Matrix4().lookAt(
+                            this.camera.position,
+                            this.player.position,
+                            upVector
+                        )
+                    );
+                    this.camera.quaternion.copy(targetQuaternion);
+                } else {
+                    // במצב TPS_FAR, המצלמה רחוקה יותר אך עדיין עוקבת אחרי הסיבוב של המטוס
+                    
+                    // מיקום המצלמה רחוק מאחורי ומעל המטוס
+                    const cameraOffset = this.cameraOffsets[CameraView.TPS_FAR];
+                    
+                    // ווקטור הכיוון הקדמי של המטוס
+                    const forwardVector = new THREE.Vector3(0, 0, 1);
+                    forwardVector.applyQuaternion(this.player.quaternion);
+                    
+                    // ווקטור הכיוון כלפי מעלה של המטוס
+                    const upVector = new THREE.Vector3(0, 1, 0);
+                    upVector.applyQuaternion(this.player.quaternion);
+                    
+                    // חישוב מיקום המצלמה ביחס למטוס
+                    const cameraPosition = new THREE.Vector3();
+                    cameraPosition.copy(this.player.position);
+                    cameraPosition.add(forwardVector.multiplyScalar(cameraOffset.z)); // רחוק מאחורי המטוס
+                    cameraPosition.add(upVector.multiplyScalar(cameraOffset.y)); // גבוה מעל המטוס
+                    
+                    this.camera.position.copy(cameraPosition);
+                    this.camera.lookAt(this.player.position);
+                    
+                    // הוספת קצת הטיה למצלמה כך שהיא תסתובב באותו כיוון כמו המטוס
+                    const targetQuaternion = new THREE.Quaternion();
+                    targetQuaternion.setFromRotationMatrix(
+                        new THREE.Matrix4().lookAt(
+                            this.camera.position,
+                            this.player.position,
+                            upVector
+                        )
+                    );
+                    this.camera.quaternion.copy(targetQuaternion);
+                }
             }
 
             // Update current plane if it exists
@@ -1023,8 +1110,23 @@ export class GameService {
             this.updateHUDCallback(this.gameSettings);
         }
     
-        // Show message
-        this.showMessage(`Camera: ${this.gameSettings.currentCameraView}`);
+        // הודעות בעברית לפי סוג המצלמה
+        let cameraMessage = "";
+        switch (this.gameSettings.currentCameraView) {
+            case CameraView.FPS:
+                cameraMessage = "מצלמה: מבט טייס (גוף ראשון)";
+                break;
+            case CameraView.TPS:
+                cameraMessage = "מצלמה: מבט חיצוני (גוף שלישי)";
+                break;
+            case CameraView.TPS_FAR:
+                cameraMessage = "מצלמה: מבט חיצוני רחוק";
+                break;
+            default:
+                cameraMessage = `מצלמה: ${this.gameSettings.currentCameraView}`;
+        }
+        
+        this.showMessage(cameraMessage);
     }
 
     /**

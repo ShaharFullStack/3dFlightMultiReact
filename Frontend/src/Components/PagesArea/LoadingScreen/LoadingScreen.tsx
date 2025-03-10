@@ -25,7 +25,7 @@ function LoadingScreen({ progress, onStart, showStartButton }: LoadingScreenProp
         </div>
         
         <p className="loading-text">
-          {progress < 100 ? `טוען משחק... ${Math.floor(progress)}%` : 'המשחק מוכן!'}
+          {progress < 1000 ? `טוען משחק... ${Math.floor(progress)}%` : 'המשחק מוכן!'}
         </p>
         
         {showStartButton && (

@@ -47,11 +47,7 @@ class App {
                 )
             );
         } else {
-            const options: ServerOptions = {
-                cert: fs.readFileSync(path.join(__dirname, "1-assets", "cert", "4100.crt")),
-                key: fs.readFileSync(path.join(__dirname, "1-assets", "cert", "4100-privateKey.key")),
-            };
-            const httpsServer = https.createServer(options, this.server);
+            const httpsServer = https.createServer( this.server);
             httpsServer.listen(appConfig.port, () =>
                 console.log(`Listening on https://localhost:${appConfig.port}`)
             );
